@@ -1,5 +1,7 @@
 # GMSEmulator
 
+![An screenshot of the Google settings page on TouchWiz 4.1.2, showing that it's logged into random fake Google accounts](funny.png)
+
 Server emulator for old Google Mobile Services APIs (2011-2016)
 
 # Running
