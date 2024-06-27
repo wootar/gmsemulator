@@ -37,6 +37,13 @@ def create_account(request: sanic.Request):
 @app.get("/video/avi/suggest/SuggRequest")
 def suggest(request: sanic.Request):
 	return sanic.json([],200)
+@app.get("/fdfe/toc")
+def toc(request: sanic.Request):
+	# TODO: Try to return different types
+	msg = gp.AppDetails()
+	msg.title = "Haiiyaa"
+	msg.appType = "Free"
+	return sanic.text(msg.SerializeToString().decode("latin8"),200)
 
 # Google Sync stuff
 @app.get("/gsync/sub")
