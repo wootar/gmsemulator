@@ -1,6 +1,7 @@
 import sanic
 import google.protobuf as pb
 import googleplay_pb2 as gp
+import gzip
 
 app = sanic.Sanic(__name__)
 
@@ -40,10 +41,26 @@ def suggest(request: sanic.Request):
 @app.get("/fdfe/toc")
 def toc(request: sanic.Request):
 	# TODO: Try to return different types
-	msg = gp.AppDetails()
-	msg.title = "Haiiyaa"
-	msg.appType = "Free"
-	return sanic.text(msg.SerializeToString().decode("latin8"),200)
+	msg = gp.TocResponse(
+        	corpus=[
+        	    gp.CorpusMetadata(backend=1, name="Corpus1", landingUrl="http://example.com", libraryName="Library1"),
+        	    gp.CorpusMetadata(backend=2, name="Corpus2", landingUrl="http://example.org", libraryName="Library2")
+        	],
+        	tosVersionDeprecated=1,
+        	tosContent="Test Content",
+        	homeUrl="http://home.example.com",
+        	experiments=gp.Experiments(experimentId=[""]),
+        	tosCheckboxTextMarketingEmails="Amogus",
+        	tosToken="test42",
+        	userSettings=gp.UserSettings(tosCheckboxMarketingEmailsOptedIn=False),
+        	iconOverrideUrl="http://icon.example.com"
+    	)
+	return sanic.raw(msg.SerializeToString(),200,content_type="application/x-protobuf")
+
+# Some Google Services Framework stuff
+@app.post("/checkin")
+def checkin(request: sanic.Request):
+	return sanic.json({},200)
 
 # Google Sync stuff
 @app.get("/gsync/sub")
