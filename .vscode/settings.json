@@ -1,0 +1,9 @@
+{
+	"files.watcherExclude": {
+		"googleplay_pb2.py": true
+	},
+	"files.exclude": {
+		"googleplay_pb2.py": true
+	},
+	"python.languageServer": "Jedi"
+}
