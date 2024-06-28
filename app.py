@@ -2,6 +2,7 @@ import sanic
 import google.protobuf as pb
 import googleplay_pb2 as gp
 import gzip
+import requests
 
 app = sanic.Sanic(__name__)
 
@@ -67,6 +68,16 @@ async def checkin(request: sanic.Request):
 @app.get("/gsync/sub")
 async def gsync_sub(request: sanic.Request):
 	return sanic.text("",200)
+
+# Google Maps stuff
+@app.post("/glm/mmap")
+def maps_mmap(request: sanic.Request):
+	# For now, we'll proxy this
+	b = requests.post("https://clients4.google.com/glm/mmap",request.body,headers=request.headers)
+	return sanic.raw(b.content,b.status_code,headers=b.headers)
+@app.get("/gmm/upgrades/index.html")
+async def maps_upgrades_html(request: sanic.Request):
+	return sanic.html("<h3>TODO</h3>\n<p>Update bypassing hasen't been implemented yet :(</p>\n<hr><style>body { background: black; color: white; }; hr { background: lightcyan; }</style><script>window.close();</script>")
 
 if __name__ == "__main__":
 	app.run(port=8095,dev=True)

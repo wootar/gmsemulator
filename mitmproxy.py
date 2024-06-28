@@ -2,7 +2,7 @@
 from mitmproxy import http, ctx
 
 def request(flow: http.HTTPFlow) -> None:
-    if flow.request.pretty_host.endswith("android.clients.google.com") or flow.request.pretty_host.endswith("play.google.com"):
+    if flow.request.pretty_host.endswith("android.clients.google.com") or flow.request.pretty_host.endswith("play.google.com") or flow.request.pretty_host.endswith("maps.gstatic.com") or flow.request.pretty_host.endswith("clients4.google.com"):
         a = bytes(flow.request.host,encoding="ascii")
         flow.request.host = '127.0.0.1'
         flow.request.scheme = 'http'
