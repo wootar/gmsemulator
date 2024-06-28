@@ -2,7 +2,7 @@ import sanic
 import google.protobuf as pb
 import googleplay_pb2 as gp
 import gzip
-import requests
+import requests, struct
 
 app = sanic.Sanic(__name__)
 
@@ -70,11 +70,26 @@ async def gsync_sub(request: sanic.Request):
 	return sanic.text("<xml></xml>",200,content_type="text/xml")
 
 # Google Maps stuff
+# 0, 1 = ????
+# 2, 3 = country
+# 4, 5 = device
+# 6, 7 = version
+# 7, 8 = Client Type(?)
+# 9, 10, 11, 12, 13 = ????
+# 14, 15 = cell id(?), lac
+# 16, 17, 18, 19 = ????
+# TODO: Parse this and proxy it
+MAPS_REQUEST_STRUCT = ">hqh2sh13sh5sh3sBiiihiiiiii"
+MAPS_LAST_REQ = []
 @app.post("/glm/mmap")
 def maps_mmap(request: sanic.Request):
-	# For now, we'll proxy this
-	b = requests.post("https://clients4.google.com/glm/mmap",request.body,headers=request.headers)
-	return sanic.raw(b.content,b.status_code,headers=b.headers)
+	global MAPS_LAST_REQ
+	if len(MAPS_LAST_REQ) == 0: 
+		b = requests.post("https://clients4.google.com/glm/mmap",request.body,headers=request.headers)
+		if len(b.content) < 64:
+			MAPS_LAST_REQ = [b.content,b.status_code,b.headers]
+		return sanic.raw(b.content,b.status_code,headers=b.headers)
+	return sanic.raw(MAPS_LAST_REQ[0],MAPS_LAST_REQ[1],MAPS_LAST_REQ[2])
 @app.get("/gmm/upgrades/index.html")
 async def maps_upgrades_html(request: sanic.Request):
 	return sanic.html("<h3>TODO</h3>\n<p>Update bypassing hasen't been implemented yet :(</p>\n<hr><style>body { background: black; color: white; }; hr { background: lightcyan; }</style><script>window.close();</script>")
@@ -85,6 +100,9 @@ def chrome_sync_command(request: sanic.Request):
 	return sanic.text("",200)
 
 # Google Plus stuff
+@app.post("/setup/createprofile")
+def gplus_createprofile(request: sanic.Request):
+	return sanic.json({"status": "SUCCESS"}, 200,{"Server":"GSE","Content-Type":"text/plain; charset=utf-8"})
 ApiaryFields = {
 	"appVersion": 0,
 	"appVersionFull": {},
@@ -98,6 +116,11 @@ ApiaryFields = {
 @app.post("/plusi/v2/ozInternal/getmobilesettings")
 def plusi_getmobilesettings(request: sanic.Request):
 	return sanic.json({"allowNonGooglePlusUsers": True, "commonFields": ApiaryFields,"enableTracing": False, "fbsVersionInfo": "0.0"},200)
+
+# GMail stuff
+@app.post("/proxy/gmail/mail/g/")
+def gmail_g(request: sanic.Request):
+	return sanic.text("",200)
 
 if __name__ == "__main__":
 	app.run(port=8095,dev=True)
