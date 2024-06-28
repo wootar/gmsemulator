@@ -67,7 +67,7 @@ async def checkin(request: sanic.Request):
 # Google Sync stuff
 @app.get("/gsync/sub")
 async def gsync_sub(request: sanic.Request):
-	return sanic.text("",200)
+	return sanic.text("<xml></xml>",200,content_type="text/xml")
 
 # Google Maps stuff
 @app.post("/glm/mmap")
@@ -78,6 +78,26 @@ def maps_mmap(request: sanic.Request):
 @app.get("/gmm/upgrades/index.html")
 async def maps_upgrades_html(request: sanic.Request):
 	return sanic.html("<h3>TODO</h3>\n<p>Update bypassing hasen't been implemented yet :(</p>\n<hr><style>body { background: black; color: white; }; hr { background: lightcyan; }</style><script>window.close();</script>")
+
+# Google Chrome Sync stuff
+@app.post("/chrome-sync/command")
+def chrome_sync_command(request: sanic.Request):
+	return sanic.text("",200)
+
+# Google Plus stuff
+ApiaryFields = {
+	"appVersion": 0,
+	"appVersionFull": {},
+	"effectiveUser": "true",
+	"experimentOverride": "",
+	"noLog": False,
+	"socialClient": {},
+	"socialClientString": "",
+	"sourceInfo": "",
+}
+@app.post("/plusi/v2/ozInternal/getmobilesettings")
+def plusi_getmobilesettings(request: sanic.Request):
+	return sanic.json({"allowNonGooglePlusUsers": True, "commonFields": ApiaryFields,"enableTracing": False, "fbsVersionInfo": "0.0"},200)
 
 if __name__ == "__main__":
 	app.run(port=8095,dev=True)
