@@ -6,14 +6,13 @@ import gzip
 app = sanic.Sanic(__name__)
 
 @app.get("/")
-def home(request: sanic.Request):
+async def home(request: sanic.Request):
 	return sanic.text("GMSEmulator is running",200)
 
 
 # Authentication stuff
 @app.post("/auth")
-def auth(request: sanic.Request):
-	print(request.form)
+async def auth(request: sanic.Request):
 	return sanic.text(f'''SID=SID
 LSID=LSID
 Auth=DQQQQFAKELOGIN==
@@ -24,22 +23,24 @@ firstName=Test
 lastName=User''', 200,{"Server":"GSE","Content-Type":"text/plain; charset=utf-8"})
 # Signing up stuff
 @app.post("/setup/checkavail")
-def checkavail(request: sanic.Request):
-	print(request.form)
+async def checkavail(request: sanic.Request):
 	return sanic.json({"status": "SUCCESS"}, 200,{"Server":"GSE","Content-Type":"text/plain; charset=utf-8"})
 @app.post("/setup/ratepw")
-def ratepw(request: sanic.Request):
+async def ratepw(request: sanic.Request):
 	return sanic.json({"status":"SUCCESS","detail": "Password is strong","strength": 0xFF},200)
 @app.post("/setup/create")
-def create_account(request: sanic.Request):
+async def create_account(request: sanic.Request):
 	return sanic.json({"status": "SUCCESS","services": "mail,talk,ig,writely,reader,androidmarket"}, 200)
 
 # Google Play stuff
 @app.get("/video/avi/suggest/SuggRequest")
-def suggest(request: sanic.Request):
-	return sanic.json([],200)
+async def suggrequest(request: sanic.Request):
+	return sanic.json(["Hello from GMSEmulator!"],200)
+@app.get("/proxy/gsasuggest/search")
+async def gsasuggest(request: sanic.Request):
+	return sanic.json(["Hello from GMSEmulator!"],200)
 @app.get("/fdfe/toc")
-def toc(request: sanic.Request):
+async def toc(request: sanic.Request):
 	# TODO: Try to return different types
 	msg = gp.TocResponse(
         	corpus=[
@@ -59,12 +60,12 @@ def toc(request: sanic.Request):
 
 # Some Google Services Framework stuff
 @app.post("/checkin")
-def checkin(request: sanic.Request):
+async def checkin(request: sanic.Request):
 	return sanic.json({},200)
 
 # Google Sync stuff
 @app.get("/gsync/sub")
-def gsync_sub(request: sanic.Request):
+async def gsync_sub(request: sanic.Request):
 	return sanic.text("",200)
 
 if __name__ == "__main__":
